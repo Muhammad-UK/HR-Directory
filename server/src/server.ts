@@ -21,6 +21,18 @@ app.get("/api/employees", async (req, res, next) => {
     next(error);
   }
 });
+app.get("/api/departments", async (req, res, next) => {
+  try {
+    const SQL = /*sql*/ `
+              SELECT * 
+              FROM departments
+          `;
+    const response = await client.query(SQL);
+    res.send(response.rows);
+  } catch (error) {
+    next(error);
+  }
+});
 
 const init = async () => {
   console.log("Connecting to database...");
