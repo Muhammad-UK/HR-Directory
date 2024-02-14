@@ -1,1 +1,1 @@
-# Full Stack Web App for HR Directories
+# Full Stack Web App for an HR Directory

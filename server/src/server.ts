@@ -34,6 +34,19 @@ app.get("/api/departments", async (req, res, next) => {
   }
 });
 
+app.delete("/api/employees/:id", async (req, res, next) => {
+  try {
+    const SQL = /*sql*/ `
+            DELETE FROM employees
+            WHERE id = $1;
+        `;
+    await client.query(SQL, [req.params.id]);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 const init = async () => {
   console.log("Connecting to database...");
   await client.connect();
