@@ -67,6 +67,28 @@ app.post("/api/employees", async (req, res, next) => {
   }
 });
 
+app.put("/api/employees/:id", async (req, res, next) => {
+  try {
+    if (!req.body.name || !req.body.department_id) {
+      return next("Missing valid body arguments");
+    }
+    const SQL = /*sql*/ `
+        UPDATE employees
+        SET name = $1, department_id = $2
+        WHERE id = $3
+        RETURNING *
+    `;
+    const response = await client.query(SQL, [
+      req.body.name,
+      req.body.department_id,
+      req.params.id,
+    ]);
+    res.send(response.rows[0]);
+  } catch (error) {
+    next(error);
+  }
+});
+
 const init = async () => {
   console.log("Connecting to database...");
   await client.connect();
