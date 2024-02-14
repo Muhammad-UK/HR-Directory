@@ -3,6 +3,7 @@ import pg from "pg";
 import cors from "cors";
 
 const app = express();
+app.use(express.json());
 app.use(cors());
 
 const client = new pg.Client(
@@ -24,8 +25,8 @@ app.get("/api/employees", async (req, res, next) => {
 app.get("/api/departments", async (req, res, next) => {
   try {
     const SQL = /*sql*/ `
-              SELECT * 
-              FROM departments
+            SELECT * 
+            FROM departments
           `;
     const response = await client.query(SQL);
     res.send(response.rows);
@@ -42,6 +43,25 @@ app.delete("/api/employees/:id", async (req, res, next) => {
         `;
     await client.query(SQL, [req.params.id]);
     res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/employees", async (req, res, next) => {
+  try {
+    if (!req.body.name || !req.body.department_id)
+      return next("Missing valid body arguments");
+    const SQL = /*sql*/ `
+            INSERT INTO employees(name, department_id) 
+            VALUES($1, $2)
+            RETURNING *
+        `;
+    const response = await client.query(SQL, [
+      req.body.name,
+      req.body.department_id,
+    ]);
+    res.status(201).send(response.rows[0]);
   } catch (error) {
     next(error);
   }
